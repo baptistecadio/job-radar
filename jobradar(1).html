@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Radar — Baptiste Cadio</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f6f6f4;
+    --bg3: #f0efec;
+    --text: #1a1a18;
+    --text2: #6b6b67;
+    --text3: #9b9b96;
+    --border: rgba(0,0,0,0.12);
+    --border2: rgba(0,0,0,0.22);
+    --blue: #378ADD;
+    --blue-bg: #E6F1FB;
+    --blue-text: #0C447C;
+    --green: #1D9E75;
+    --green-bg: #E1F5EE;
+    --green-text: #0F6E56;
+    --amber-bg: #FAEEDA;
+    --amber-text: #633806;
+    --purple-bg: #EEEDFE;
+    --purple-text: #3C3489;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a18;
+      --bg2: #242422;
+      --bg3: #2c2c2a;
+      --text: #f0efec;
+      --text2: #9b9b96;
+      --text3: #6b6b67;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.2);
+      --blue-bg: #0C2340;
+      --blue-text: #85B7EB;
+      --green-bg: #04201A;
+      --green-text: #5DCAA5;
+      --amber-bg: #2A1A06;
+      --amber-text: #FAC775;
+      --purple-bg: #1A1840;
+      --purple-text: #AFA9EC;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg3); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+  .container { max-width: 860px; margin: 0 auto; padding: 2rem 1rem; }
+
+  /* Header */
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; }
+  .header-left h1 { font-size: 22px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .header-left p { font-size: 13px; color: var(--text2); margin-top: 4px; }
+  .ai-badge { font-size: 11px; font-weight: 500; background: var(--green-bg); color: var(--green-text); padding: 3px 10px; border-radius: 99px; }
+
+  /* API Key setup */
+  .setup-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; }
+  .setup-card h2 { font-size: 15px; font-weight: 500; margin-bottom: .5rem; display: flex; align-items: center; gap: 8px; }
+  .setup-card p { font-size: 13px; color: var(--text2); margin-bottom: 1rem; line-height: 1.6; }
+  .setup-row { display: flex; gap: 8px; }
+  .setup-row input { flex: 1; font-size: 13px; padding: 8px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg2); color: var(--text); outline: none; }
+  .setup-row input:focus { border-color: var(--blue); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 16px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: transparent; color: var(--text); cursor: pointer; white-space: nowrap; }
+  .btn:hover { background: var(--bg2); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-primary { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-text); font-weight: 500; }
+  .btn-primary:hover { background: #d0e6f8; }
+  .api-saved { font-size: 12px; color: var(--green-text); display: flex; align-items: center; gap: 5px; margin-top: 8px; }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .stat { background: var(--bg2); border-radius: var(--radius); padding: 12px 14px; }
+  .stat-n { font-size: 24px; font-weight: 500; }
+  .stat-l { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* Filters */
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; align-items: center; }
+  .sep { width: 0.5px; height: 20px; background: var(--border); margin: 0 2px; }
+  .fb { font-size: 12px; padding: 5px 12px; border-radius: 99px; border: 0.5px solid var(--border); background: transparent; color: var(--text2); cursor: pointer; white-space: nowrap; }
+  .fb:hover { background: var(--bg2); }
+  .fb.on { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-text); }
+  .fb.on.g { background: var(--green-bg); border-color: var(--green); color: var(--green-text); }
+  .fb.on.o { background: var(--amber-bg); border-color: #FAC775; color: var(--amber-text); }
+
+  /* Sort */
+  .sort-row { display: flex; align-items: center; gap: 8px; margin-bottom: 1.25rem; }
+  .sort-row span { font-size: 12px; color: var(--text2); }
+  .sort-row select { font-size: 12px; padding: 5px 10px; border: 0.5px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text); cursor: pointer; }
+
+  /* Cards */
+  .section-label { font-size: 11px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--text3); margin: 1.5rem 0 .75rem; }
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 8px; transition: border-color .15s; }
+  .card:hover { border-color: var(--border2); }
+  .card.top { border-left: 2px solid var(--blue); }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .card-title { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+  .card-co { font-size: 12px; color: var(--text2); }
+  .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .dots { display: flex; gap: 3px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border2); }
+  .dot.g { background: var(--green); }
+  .dot.a { background: #EF9F27; }
+  .card-date { font-size: 11px; color: var(--text3); }
+  .badges { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+  .badge { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 99px; }
+  .b-in { background: var(--purple-bg); color: var(--purple-text); }
+  .b-hw { background: var(--green-bg); color: var(--green-text); }
+  .b-wt { background: var(--amber-bg); color: var(--amber-text); }
+  .b-li { background: var(--blue-bg); color: var(--blue-text); }
+  .b-cdd { background: var(--amber-bg); color: var(--amber-text); }
+  .b-cdi { background: var(--green-bg); color: var(--green-text); }
+  .b-z1 { background: var(--blue-bg); color: var(--blue-text); }
+  .b-z2 { background: var(--green-bg); color: var(--green-text); }
+  .b-z3 { background: var(--amber-bg); color: var(--amber-text); }
+  .b-tag { background: var(--bg2); color: var(--text2); }
+  .card-link { font-size: 12px; color: var(--blue); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; }
+  .card-link:hover { text-decoration: underline; }
+
+  /* Loader */
+  .loader-wrap { text-align: center; padding: 3rem 1rem; }
+  .loader-wrap p { font-size: 13px; color: var(--text2); margin: 12px 0 4px; }
+  .loader-step { font-size: 11px; color: var(--text3); }
+  .progress-bar { height: 3px; background: var(--border); border-radius: 99px; margin: 12px auto; max-width: 200px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--blue); border-radius: 99px; transition: width .4s ease; }
+  .empty { text-align: center; padding: 3rem 1rem; color: var(--text2); font-size: 14px; }
+
+  /* Last update */
+  .meta-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .last-update { font-size: 11px; color: var(--text3); }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 1s linear infinite; display: inline-block; }
+
+  @media (max-width: 600px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-left">
+      <h1><i class="ti ti-radar"></i> Job Radar <span class="ai-badge">IA</span></h1>
+      <p>com · graphisme · photo — Marseille · Bordeaux · Côtes Sud</p>
+    </div>
+    <button class="btn btn-primary" onclick="runSearch()" id="rbtn">
+      <i class="ti ti-refresh" id="rico"></i> Actualiser
+    </button>
+  </div>
+
+  <!-- Setup API Key -->
+  <div class="setup-card" id="setup-card">
+    <h2><i class="ti ti-key"></i> Clé API Anthropic</h2>
+    <p>Pour que l'agent IA recherche les offres en temps réel, entre ta clé API Anthropic. Elle est sauvegardée uniquement dans ton navigateur (localStorage) et n'est jamais partagée.</p>
+    <p>Obtiens ta clé sur <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--blue)">console.anthropic.com → API Keys</a>. Le plan gratuit suffit pour un usage personnel.</p>
+    <div class="setup-row">
+      <input type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off">
+      <button class="btn btn-primary" onclick="saveKey()"><i class="ti ti-check"></i> Sauvegarder</button>
+    </div>
+    <div id="key-status"></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="s0">—</div><div class="stat-l">offres trouvées</div></div>
+    <div class="stat"><div class="stat-n" id="s1">—</div><div class="stat-l">top match</div></div>
+    <div class="stat"><div class="stat-n" id="s2">—</div><div class="stat-l">nouvelles 7j</div></div>
+    <div class="stat"><div class="stat-n" id="s3">—</div><div class="stat-l">zone Marseille</div></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <button class="fb on" onclick="setF('all',this)">Toutes</button>
+    <div class="sep"></div>
+    <button class="fb" onclick="setF('indeed',this)">Indeed</button>
+    <button class="fb" onclick="setF('hellowork',this)">Hellowork</button>
+    <button class="fb" onclick="setF('wttj',this)">WTTJ</button>
+    <button class="fb" onclick="setF('linkedin',this)">LinkedIn</button>
+    <div class="sep"></div>
+    <button class="fb g" onclick="setF('z1',this)"><i class="ti ti-map-pin" style="font-size:11px"></i> Marseille · Aix · Mtp</button>
+    <button class="fb g" onclick="setF('z2',this)"><i class="ti ti-map-pin" style="font-size:11px"></i> Bordeaux</button>
+    <button class="fb o" onclick="setF('z3',this)"><i class="ti ti-map-pin" style="font-size:11px"></i> Côtes Sud</button>
+    <div class="sep"></div>
+    <button class="fb" onclick="setF('cdd',this)">CDD</button>
+    <button class="fb" onclick="setF('cdi',this)">CDI</button>
+  </div>
+
+  <div class="sort-row">
+    <span>Trier par</span>
+    <select onchange="srt=this.value;renderList()">
+      <option value="score">Pertinence</option>
+      <option value="date">Date (récent)</option>
+      <option value="source">Source</option>
+      <option value="zone">Zone</option>
+    </select>
+  </div>
+
+  <div class="meta-row">
+    <span class="last-update" id="last-update"></span>
+  </div>
+
+  <div id="list"></div>
+
+</div>
+
+<script>
+let allOffers = [], filt = 'all', srt = 'score';
+
+const SYSTEM = `Tu es un agent de recherche d'emploi pour Baptiste Cadio (BUT MMI — graphisme, communication, photo).
+
+PROFIL :
+- Compétences PRINCIPALES : communication, graphisme, photographie, community manager, print, digital, identité visuelle, réseaux sociaux, multimédia
+- Compétences SECONDAIRES (acceptées UNIQUEMENT si accompagnées de compétences principales) : vidéo, motion design, montage, audiovisuel
+- Contrats : CDD prioritaire, CDI accepté
+- EXCLURE : alternance, alternant, apprenti, université, enseignant, développeur, ingénieur, comptable
+
+ZONES :
+- z1 : Marseille, Aix-en-Provence, Montpellier, Aubagne
+- z2 : Bordeaux, Mérignac
+- z3 : Toulon, Nice, Perpignan, Biarritz, Nîmes, Cannes, Antibes, Sète
+
+Utilise l'outil web_search pour trouver des offres RÉELLES et ACTIVES (moins de 14 jours).
+Cherche sur Indeed, Hellowork, Welcome to the Jungle, LinkedIn.
+
+Réponds UNIQUEMENT avec un objet JSON valide, sans texte avant ni après, sans backticks.
+Format :
+{"offers":[{"title":"...","company":"...","city":"...","zone":"z1|z2|z3","type":"cdd|cdi","source":"indeed|hellowork|wttj|linkedin","score":3,"pubDate":"YYYY-MM-DD","link":"https://...","tags":["tag1","tag2"]}]}
+
+score: 3 = poste principal (com/graphisme/photo), 2 = poste secondaire pertinent.
+Trouve au minimum 8 offres réelles. N'invente rien.`;
+
+const SEARCHES = [
+  'offres emploi chargé communication graphiste photographe CDD Marseille Aix-en-Provence Montpellier juin 2026 site:hellowork.com OR site:fr.indeed.com',
+  'offres emploi graphiste communication CDD CDI Bordeaux Toulon Nice Perpignan juin 2026 site:welcometothejungle.com OR site:hellowork.com',
+  'chargé communication graphiste photographe community manager CDD Marseille Bordeaux 2026'
+];
+
+function saveKey() {
+  const val = document.getElementById('api-key-input').value.trim();
+  if (!val.startsWith('sk-ant-')) {
+    document.getElementById('key-status').innerHTML = '<p style="color:#E24B4A;font-size:12px;margin-top:8px"><i class="ti ti-alert-circle"></i> Clé invalide — doit commencer par sk-ant-</p>';
+    return;
+  }
+  localStorage.setItem('jr_api_key', val);
+  document.getElementById('key-status').innerHTML = '<p class="api-saved"><i class="ti ti-check"></i> Clé sauvegardée — lancement de la recherche...</p>';
+  document.getElementById('setup-card').style.opacity = '.6';
+  setTimeout(() => runSearch(), 800);
+}
+
+function getKey() {
+  return localStorage.getItem('jr_api_key') || '';
+}
+
+function initKeyUI() {
+  const key = getKey();
+  if (key) {
+    document.getElementById('api-key-input').value = key;
+    document.getElementById('key-status').innerHTML = '<p class="api-saved"><i class="ti ti-check"></i> Clé déjà sauvegardée</p>';
+  }
+}
+
+async function callClaude(query) {
+  const key = getKey();
+  if (!key) throw new Error('Clé API manquante');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      system: SYSTEM,
+      messages: [{ role: 'user', content: query }]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  const texts = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  const start = texts.indexOf('{');
+  const end = texts.lastIndexOf('}');
+  if (start === -1 || end === -1) return [];
+  const parsed = JSON.parse(texts.slice(start, end + 1));
+  return parsed.offers || [];
+}
+
+function dedupe(offers) {
+  const seen = new Set();
+  return offers.filter(o => {
+    const k = (o.title || '').toLowerCase().slice(0, 35) + '|' + (o.company || '').toLowerCase().slice(0, 15);
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+}
+
+function renderDots(s) {
+  return [1, 2, 3].map(i => `<div class="dot${i <= s ? (s === 3 ? ' g' : ' a') : ''}"></div>`).join('');
+}
+
+function renderCard(o) {
+  const sc = { indeed: 'b-in', hellowork: 'b-hw', wttj: 'b-wt', linkedin: 'b-li' }[o.source] || 'b-tag';
+  const sl = { indeed: 'Indeed', hellowork: 'Hellowork', wttj: 'WTTJ', linkedin: 'LinkedIn' }[o.source] || o.source;
+  const zc = { z1: 'b-z1', z2: 'b-z2', z3: 'b-z3' }[o.zone] || 'b-tag';
+  const tc = o.type === 'cdi' ? 'b-cdi' : 'b-cdd';
+  const tl = o.type === 'cdi' ? 'CDI' : 'CDD';
+  const tags = (o.tags || []).slice(0, 3).map(t => `<span class="badge b-tag">${t}</span>`).join('');
+  return `<div class="card${o.score === 3 ? ' top' : ''}">
+    <div class="card-top">
+      <div style="flex:1;min-width:0">
+        <p class="card-title">${o.title}</p>
+        <p class="card-co"><i class="ti ti-building" style="font-size:12px;margin-right:3px"></i>${o.company || '—'} <span style="color:var(--text3)">— ${o.city}</span></p>
+      </div>
+      <div class="card-right">
+        <div class="dots">${renderDots(o.score)}</div>
+        <span class="card-date">${o.pubDate || ''}</span>
+      </div>
+    </div>
+    <div class="badges">
+      <span class="badge ${sc}">${sl}</span>
+      <span class="badge ${tc}">${tl}</span>
+      <span class="badge ${zc}"><i class="ti ti-map-pin" style="font-size:10px;margin-right:2px"></i>${o.city}</span>
+      ${tags}
+    </div>
+    <a class="card-link" href="${o.link}" target="_blank"><i class="ti ti-external-link" style="font-size:12px"></i> Voir l'offre</a>
+  </div>`;
+}
+
+function renderList() {
+  let list = [...allOffers];
+  if (['indeed', 'hellowork', 'wttj', 'linkedin'].includes(filt)) list = list.filter(o => o.source === filt);
+  else if (['z1', 'z2', 'z3'].includes(filt)) list = list.filter(o => o.zone === filt);
+  else if (filt === 'cdd' || filt === 'cdi') list = list.filter(o => o.type === filt);
+
+  if (srt === 'date') list.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+  else if (srt === 'source') list.sort((a, b) => (a.source || '').localeCompare(b.source || ''));
+  else if (srt === 'zone') list.sort((a, b) => (a.zone || '').localeCompare(b.zone || ''));
+  else list.sort((a, b) => (b.score || 0) - (a.score || 0));
+
+  const top = list.filter(o => o.score === 3);
+  const rest = list.filter(o => o.score === 2);
+  let html = '';
+  if (top.length) { html += '<div class="section-label"><i class="ti ti-star" style="font-size:11px;margin-right:4px"></i>Top match — à postuler en priorité</div>'; top.forEach(o => html += renderCard(o)); }
+  if (rest.length) { html += '<div class="section-label">Bons matchs</div>'; rest.forEach(o => html += renderCard(o)); }
+  if (!list.length) html = `<div class="empty"><i class="ti ti-search-off" style="font-size:32px;display:block;margin:0 auto 12px;color:var(--text3)"></i>${allOffers.length === 0 ? 'Lance une recherche pour voir les offres' : 'Aucune offre pour ce filtre'}</div>`;
+  document.getElementById('list').innerHTML = html;
+
+  document.getElementById('s0').textContent = allOffers.length;
+  document.getElementById('s1').textContent = allOffers.filter(o => o.score === 3).length;
+  const week = allOffers.filter(o => { try { return (Date.now() - new Date(o.pubDate)) / 86400000 <= 7; } catch (e) { return false; } }).length;
+  document.getElementById('s2').textContent = week;
+  document.getElementById('s3').textContent = allOffers.filter(o => o.zone === 'z1').length;
+}
+
+function setProgress(pct, step) {
+  document.getElementById('list').innerHTML = `<div class="loader-wrap">
+    <i class="ti ti-loader spin" style="font-size:28px;color:var(--text2)"></i>
+    <p>${step}</p>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <p class="loader-step">${pct}%</p>
+  </div>`;
+}
+
+function setF(f, btn) {
+  document.querySelectorAll('.fb').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  filt = f; renderList();
+}
+
+async function runSearch() {
+  if (!getKey()) {
+    document.getElementById('list').innerHTML = '<div class="empty"><i class="ti ti-key" style="font-size:32px;display:block;margin:0 auto 12px;color:var(--text3)"></i>Entre ta clé API Anthropic ci-dessus pour lancer la recherche.</div>';
+    return;
+  }
+  const btn = document.getElementById('rbtn');
+  const icon = document.getElementById('rico');
+  btn.disabled = true;
+  icon.classList.add('spin');
+  allOffers = [];
+
+  const steps = [
+    'Recherche Marseille · Aix · Montpellier...',
+    'Recherche Bordeaux · Côtes Sud...',
+    'Recherche croisée multi-sources...'
+  ];
+
+  for (let i = 0; i < SEARCHES.length; i++) {
+    setProgress(Math.round((i / SEARCHES.length) * 85), steps[i]);
+    try {
+      const offers = await callClaude(SEARCHES[i]);
+      allOffers = dedupe([...allOffers, ...offers]);
+    } catch (e) {
+      console.error(e);
+      if (e.message.includes('API')) {
+        document.getElementById('list').innerHTML = `<div class="empty"><i class="ti ti-alert-circle" style="font-size:32px;display:block;margin:0 auto 12px;color:#E24B4A"></i>Erreur API : ${e.message}<br><small style="color:var(--text3)">Vérifie ta clé API dans le panneau ci-dessus.</small></div>`;
+        btn.disabled = false; icon.classList.remove('spin'); return;
+      }
+    }
+  }
+
+  setProgress(100, 'Finalisation...');
+  await new Promise(r => setTimeout(r, 300));
+
+  const now = new Date();
+  document.getElementById('last-update').textContent = `Dernière mise à jour : ${now.toLocaleDateString('fr-FR')} à ${now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+  renderList();
+  btn.disabled = false;
+  icon.classList.remove('spin');
+}
+
+initKeyUI();
+renderList();
+</script>
+</body>
+</html>
